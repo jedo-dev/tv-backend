@@ -18,7 +18,7 @@ jobs:
         env:
           MONGO: ${{ secrets.MONGO }}
       - name: 🏃 Docker Compose Up
-        run: docker-compose -f docker-compose.yml up -d dev
+        run: docker-compose -f docker-compose.yml up -d tv-backend
         env:
           MONGO: ${{ secrets.MONGO }}
 

@@ -59,15 +59,19 @@ export class TvProgrammsService {
           const lang =
             program.getElementsByTagName('title')[0]?.getAttribute('lang') ||
             '';
-          data.push({
-            start,
-            stop,
-            channel,
-            title,
-            description,
-            category,
-            lang,
-          });
+
+          const seenChannels = new Set<number>([353, 323, 79, 1649, 1322]); // Сет для хранения каналов
+          if (channel && seenChannels.has(channel)){
+            data.push({
+              start,
+              stop,
+              channel,
+              title,
+              description,
+              category,
+              lang,
+            });
+          }
         }
         // Пример: Извлечение данных о программах
         // const programs = xmlDoc.getElementsByTagName('programme');

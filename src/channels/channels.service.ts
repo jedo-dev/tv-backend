@@ -19,7 +19,6 @@ export class ChannelsService {
   async getChannelWithPrograms(channelId: number): Promise<any> {
     try {
       // Агрегация для связи каналов и программ
-      console.log(channelId)
       const result = await this.channelsModel.aggregate([
         {
           $match: { id: +channelId }, // Фильтрация по ID канала
@@ -60,32 +59,30 @@ export class ChannelsService {
     limit?: number;
   }): Promise<any> {
     const { name, currentStart, currentEnd, page = 1, limit = 10 } = query;
+    const seenChannels = new Set<number>([353, 323, 79, 1649, 1322]);
 
     try {
-      // Фильтр для поиска каналов
-      const channelFilter: any = {};
+      const channelFilter: any = { id: { $in: Array.from(seenChannels) } };
       if (name) {
-        channelFilter.name = { $regex: name, $options: 'i' }; // Поиск по имени (регистронезависимый)
+        channelFilter.name = { $regex: name, $options: 'i' };
       }
 
-      // Поиск текущих программ
       const currentProgramsFilter: any = {};
       if (currentStart && currentEnd) {
-        currentProgramsFilter.start = { $lte: currentEnd }; // Программа начинается до конца интервала
-        currentProgramsFilter.stop = { $gte: currentStart }; // Программа заканчивается после начала интервала
+        currentProgramsFilter.start = { $lte: currentEnd };
+        currentProgramsFilter.stop = { $gte: currentStart };
       }
 
-      const skip = (page - 1) * limit; // Пропустить записи для пагинации
-
-      // Агрегация для получения каналов с текущими программами
+      const skip = (page - 1) * limit;
+      console.log(`channelFilter`,channelFilter)
       const result = await this.channelsModel.aggregate([
-        { $match: channelFilter }, // Фильтрация каналов
+        { $match: channelFilter },
         {
           $lookup: {
-            from: 'tvprogramms', // Коллекция телепрограмм
-            localField: 'id', // Поле в коллекции каналов
-            foreignField: 'channel', // Поле в коллекции телепрограмм
-            as: 'programms', // Поле для результатов
+            from: 'tvprogramms',
+            localField: 'id',
+            foreignField: 'channel',
+            as: 'programms',
           },
         },
         {
@@ -104,12 +101,11 @@ export class ChannelsService {
             },
           },
         },
-        { $unset: 'programms' }, // Убираем лишнее поле программ
-        { $skip: skip }, // Пропустить записи
-        { $limit: limit }, // Лимит записей
+        { $unset: 'programms' },
+        { $skip: skip },
+        { $limit: limit },
       ]);
 
-      // Общее количество записей (для пагинации)
       const totalCount = await this.channelsModel.countDocuments(channelFilter);
 
       return {

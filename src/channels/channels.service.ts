@@ -59,7 +59,7 @@ export class ChannelsService {
     limit?: number;
   }): Promise<any> {
     const { name, currentStart, currentEnd, page = 1, limit = 10 } = query;
-    const seenChannels = new Set<number>([353, 323, 79, 1649, 1322]);
+    const seenChannels = new Set<number>([353, 323, 79, 1649, 1322, 1037, 821]);
 
     try {
       const channelFilter: any = { id: { $in: Array.from(seenChannels) } };

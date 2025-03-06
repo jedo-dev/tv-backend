@@ -60,7 +60,7 @@ export class TvProgrammsService {
             program.getElementsByTagName('title')[0]?.getAttribute('lang') ||
             '';
 
-          const seenChannels = new Set<number>([353, 323, 79, 1649, 1322]); // Сет для хранения каналов
+          const seenChannels = new Set<number>([353, 323, 79, 1649, 1322,1037,821]); // Сет для хранения каналов
           if (channel && seenChannels.has(channel)){
             data.push({
               start,
